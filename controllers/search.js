@@ -318,17 +318,17 @@ export const getSearchDetails = async (req, res) => {
           result.source.url +
           "#:~:text=" +
           encodeURI(result.highlights.join("&text=")),
-        type: result.source.type,
+        type: result.source.type.replaceAll("_", " "),
       })),
       validSources: search.validSources.map((source) => ({
         title: source.title,
         url: source.url,
-        type: source.type,
+        type: source.type.replaceAll("_", " "),
       })),
       invalidSources: search.invalidSources.map((source) => ({
         title: source.title,
         url: source.url,
-        type: source.type,
+        type: source.type.replaceAll("_", " "),
       })),
       attachedFiles: search.attachedFiles.map((file) => ({
         id: file.id,
