@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceType {
+  IR_Page
+  SEC_Filing
+  Earnings_Call
+  Uploaded_Document
+  Industry_Report
+  Press
+}
+
+model Search {
+  id             String         @id @default(cuid())
+  userId         String
+  query          String
+  summary        String
+  validSources   Source[]       @relation("ValidSources")
+  invalidSources Source[]       @relation("InvalidSources")
+  searchResults  SearchResult[] @relation("SearchToSearchResult")
+  attachedFiles  UploadedFile[] @relation("SearchFiles")
+
+  createdAt DateTime @default(now())
+}
+
+model Source {
+  id              String         @id @default(cuid())
+  title           String
+  url             String         @unique
+  type            SourceType
+  validInSearch   Search[]       @relation("ValidSources")
+  invalidInSearch Search[]       @relation("InvalidSources")
+  searchResults   SearchResult[] @relation("SourceSearchResults")
+}
+
+model SearchResult {
+  id         String   @id @default(cuid())
+  content    String
+  sourceId   String
+  source     Source   @relation(fields: [sourceId], references: [id], name: "SourceSearchResults")
+  searchId   String
+  search     Search   @relation(fields: [searchId], references: [id], name: "SearchToSearchResult")
+  highlights String[]
+}
+
+model UploadedFile {
+  id       String   @id @default(cuid())
+  userId   String
+  name     String
+  mimeType String
+  size     Int
+  path String
+  searches Search[] @relation("SearchFiles")
+
+  createdAt DateTime @default(now())
+}
