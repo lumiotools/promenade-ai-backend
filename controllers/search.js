@@ -206,7 +206,7 @@ export const handleSearch = async (req, res) => {
 
 export const getUserSearches = async (req, res) => {
   try {
-    const { user_id } = req.params;
+    const { user_id } = req.query;
     if (!user_id) {
       console.log("GET_USER_SEARCHES ERROR 400: User ID is required");
       return res.status(400).json({
@@ -239,7 +239,7 @@ export const getUserSearches = async (req, res) => {
 
 export const getUserFiles = async (req, res) => {
   try {
-    const { user_id } = req.params;
+    const { user_id } = req.query;
     if (!user_id) {
       console.log("GET_USER_FILES ERROR 400: User ID is required");
       return res.status(400).json({
@@ -274,7 +274,7 @@ export const getUserFiles = async (req, res) => {
 
 export const getSearchDetails = async (req, res) => {
   try {
-    const { search_id } = req.params;
+    const { search_id } = req.query;
     if (!search_id) {
       console.log("GET_SEARCH_DETAILS ERROR 400: Search ID is required");
       return res.status(400).json({
@@ -344,6 +344,112 @@ export const getSearchDetails = async (req, res) => {
     });
   } catch (error) {
     console.log("GET_SEARCH_DETAILS ERROR 500: ", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteUserSearch = async (req, res) => {
+  try {
+    const { user_id } = req.query;
+    const { search_id } = req.params;
+
+    if (!user_id) {
+      console.log("DELETE_USER_SEARCH ERROR 400: User ID is required");
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    if (!search_id) {
+      console.log("DELETE_SEARCH ERROR 400: Search ID is required");
+      return res.status(400).json({
+        success: false,
+        message: "Search ID is required",
+      });
+    }
+    const search = await prisma.search.findUnique({
+      where: {
+        id: search_id,
+      },
+    });
+
+    if (!search) {
+      console.log("DELETE_SEARCH ERROR 404: Search not found");
+      return res.status(404).json({
+        success: false,
+        message: "Search not found",
+      });
+    }
+
+    await prisma.search.delete({
+      where: {
+        id: search_id,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Search deleted",
+    });
+  } catch (error) {
+    console.log("DELETE_SEARCH ERROR 500: ", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteUserFile = async (req, res) => {
+  try {
+    const { user_id } = req.query;
+    const { file_id } = req.params;
+
+    if (!user_id) {
+      console.log("DELETE_USER_FILE ERROR 400: User ID is required");
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+
+    if (!file_id) {
+      console.log("DELETE_USER_FILE ERROR 400: File ID is required");
+      return res.status(400).json({
+        success: false,
+        message: "File ID is required",
+      });
+    }
+    const file = await prisma.uploadedFile.findUnique({
+      where: {
+        id: file_id,
+      },
+    });
+
+    if (!file) {
+      console.log("DELETE_USER_FILE ERROR 404: File not found");
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    await prisma.uploadedFile.delete({
+      where: {
+        id: file_id,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "File deleted",
+    });
+  } catch (error) {
+    console.log("DELETE_USER_FILE ERROR 500: ", error);
     return res.status(500).json({
       success: false,
       message: error.message,
