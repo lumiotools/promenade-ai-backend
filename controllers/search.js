@@ -214,15 +214,19 @@ export const getUserSearches = async (req, res) => {
         message: "User ID is required",
       });
     }
-    const searches = await prisma.search.findMany({
+    let searches = await prisma.search.findMany({
       where: {
         userId: user_id,
       },
       select: {
         id: true,
         query: true,
+        createdAt: true,
       },
     });
+
+    searches = searches.sort((a, b) => b.createdAt - a.createdAt);
+    
     return res.status(200).json({
       success: true,
       message: "Searches retrieved",
