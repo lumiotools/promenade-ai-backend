@@ -237,6 +237,41 @@ export const getUserSearches = async (req, res) => {
   }
 };
 
+export const getUserFiles = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    if (!user_id) {
+      console.log("GET_USER_FILES ERROR 400: User ID is required");
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
+    const files = await prisma.uploadedFile.findMany({
+      where: {
+        userId: user_id,
+      },
+      select: {
+        id: true,
+        name: true,
+        mimeType: true,
+        size: true,
+      },
+    });
+    return res.status(200).json({
+      success: true,
+      message: "Files retrieved",
+      data: files,
+    });
+  } catch (error) {
+    console.log("GET_USER_FILES ERROR 500: ", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const getSearchDetails = async (req, res) => {
   try {
     const { search_id } = req.params;
