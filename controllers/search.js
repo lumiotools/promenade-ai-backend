@@ -274,7 +274,7 @@ export const getUserFiles = async (req, res) => {
 
 export const getSearchDetails = async (req, res) => {
   try {
-    const { search_id } = req.query;
+    const { search_id } = req.params;
     if (!search_id) {
       console.log("GET_SEARCH_DETAILS ERROR 400: Search ID is required");
       return res.status(400).json({
@@ -374,6 +374,7 @@ export const deleteUserSearch = async (req, res) => {
     const search = await prisma.search.findUnique({
       where: {
         id: search_id,
+        userId: user_id,
       },
     });
 
@@ -384,6 +385,12 @@ export const deleteUserSearch = async (req, res) => {
         message: "Search not found",
       });
     }
+
+    await prisma.searchResult.deleteMany({
+      where: {
+        searchId: search_id,
+      },
+    });
 
     await prisma.search.delete({
       where: {
@@ -427,6 +434,7 @@ export const deleteUserFile = async (req, res) => {
     const file = await prisma.uploadedFile.findUnique({
       where: {
         id: file_id,
+        userId: user_id,
       },
     });
 
