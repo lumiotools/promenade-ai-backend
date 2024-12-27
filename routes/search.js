@@ -12,7 +12,7 @@ import file_handler from "../middlewares/file_handler.js";
 
 const router = Router();
 
-router.post("/upload_file", file_handler.array("file"), handleFileUpload);
+router.post("/upload_files", file_handler.array("file"), handleFileUpload);
 router.post("/", handleSearch);
 router.get("/user", getUserSearches);
 router.get("/files", getUserFiles);
