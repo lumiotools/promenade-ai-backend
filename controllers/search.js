@@ -226,7 +226,7 @@ export const getUserSearches = async (req, res) => {
     });
 
     searches = searches.sort((a, b) => b.createdAt - a.createdAt);
-    
+
     return res.status(200).json({
       success: true,
       message: "Searches retrieved",
@@ -327,7 +327,12 @@ export const getSearchDetails = async (req, res) => {
       validSources: search.validSources.map((source) => ({
         title: source.title,
         url: source.url,
-        type: source.type.replaceAll("_", " "),
+        type: source.type
+          .replaceAll("_", " ")
+          .replace(
+            "None",
+            process.env.FILE_UPLOAD_API_URL.replace("/api/upload_files", "")
+          ),
       })),
       invalidSources: search.invalidSources.map((source) => ({
         title: source.title,
