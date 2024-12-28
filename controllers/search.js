@@ -242,12 +242,19 @@ export const getUserFiles = async (req, res) => {
         name: true,
         mimeType: true,
         size: true,
+        path: true,
       },
     });
     return res.status(200).json({
       success: true,
       message: "Files retrieved",
-      data: files,
+      data: files.map((file) => ({
+        id: file.id,
+        name: file.name,
+        mimeType: file.mimeType,
+        size: file.size,
+        url: getFileUrl(file.path),
+      })),
     });
   } catch (error) {
     console.log("GET_USER_FILES ERROR 500: ", error);
