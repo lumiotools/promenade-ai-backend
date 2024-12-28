@@ -1,8 +1,7 @@
 import prisma from "../config/prisma.js";
-import fs from "fs";
-import FormData from "form-data";
 import axios from "axios";
-import { removeFile } from "../middlewares/file_handler.js";
+import removeFile from "../services/remove_file.js";
+import getFileUrl from "../services/get_file_url.js";
 
 /**
  * Handles the search functionality.
@@ -24,6 +23,14 @@ export const handleFileUpload = async (req, res) => {
       });
     }
 
+    if (req.fileError) {
+      console.log("HANDLE_FILE_UPLOAD ERROR 400: ", req.fileError);
+      return res.status(400).json({
+        success: false,
+        message: req.fileError,
+      });
+    }
+
     if (files.length === 0) {
       console.log("HANDLE_FILE_UPLOAD ERROR 400: Files are required");
       return res.status(400).json({
@@ -32,44 +39,16 @@ export const handleFileUpload = async (req, res) => {
       });
     }
 
-    const formData = new FormData();
-    files.forEach((file) => {
-      formData.append(
-        "files",
-        fs.createReadStream("./uploads/" + file.filename),
-        { contentType: file.mimetype, filename: file.originalname }
-      );
-    });
-
-    const uploadResponse = await axios.post(
-      process.env.FILE_UPLOAD_API_URL,
-      formData,
-      {
-        headers: formData.getHeaders(),
-      }
-    );
-
-    if (!uploadResponse.data.success) {
-      console.log("HANDLE_FILE_UPLOAD ERROR 500: File upload failed");
-      return res.status(500).json({
-        success: false,
-        message: "File upload failed",
-      });
-    }
-
-    const { files: uploadedFiles } = uploadResponse.data;
-
-    files.forEach((file) => {
-      removeFile(file.filename);
-    });
-
     const dbFiles = await prisma.uploadedFile.createManyAndReturn({
       data: files.map((file, i) => ({
         userId: user_id,
         name: file.originalname,
         mimeType: file.mimetype,
         size: file.size,
-        path: uploadedFiles[i],
+        path: file.filename.replace(
+          process.env.CLOUDINARY_FOLDER_NAME + "/",
+          ""
+        ),
       })),
     });
 
@@ -121,13 +100,16 @@ export const handleSearch = async (req, res) => {
       console.log("HANDLE_SEARCH ERROR 400: Invalid file id");
       return res.status(400).json({
         success: false,
-        message: "Invalid file id",
+        message: "Files not found",
       });
     }
 
     const searchResponse = await axios.post(process.env.SEARCH_API_URL, {
       message: query,
-      files: dbFiles.map((file) => file.path),
+      files: dbFiles.map((file) => ({
+        name: file.name,
+        url: getFileUrl(file.path),
+      })),
     });
 
     if (!searchResponse.data?.response) {
@@ -175,7 +157,7 @@ export const handleSearch = async (req, res) => {
                 where: { url: node.source.split("#:~:text=")[0] }, // Ensure uniqueness by splitting to base URL
                 create: {
                   title: node.title,
-                  url: node.source,
+                  url: node.source.split("#:~:text=")[0],
                   type: node.doc_type.replace(/ /g, "_"),
                 },
               },
@@ -344,6 +326,7 @@ export const getSearchDetails = async (req, res) => {
         name: file.name,
         mimeType: file.mimeType,
         size: file.size,
+        url: getFileUrl(file.path),
       })),
     };
     return res.status(200).json({
@@ -460,6 +443,8 @@ export const deleteUserFile = async (req, res) => {
         id: file_id,
       },
     });
+
+    await removeFile(file.path);
 
     return res.status(200).json({
       success: true,
