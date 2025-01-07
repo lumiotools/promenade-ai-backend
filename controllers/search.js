@@ -63,7 +63,7 @@ export const handleFileUpload = async (req, res) => {
     console.log("HANDLE_FILE_UPLOAD ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
@@ -189,7 +189,7 @@ export const handleSearch = async (req, res) => {
     console.log("HANDLE_SEARCH ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
@@ -226,7 +226,7 @@ export const getUserSearches = async (req, res) => {
     console.log("GET_USER_SEARCHES ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
@@ -268,7 +268,7 @@ export const getUserFiles = async (req, res) => {
     console.log("GET_USER_FILES ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
@@ -315,7 +315,7 @@ export const getSearchDetails = async (req, res) => {
         ["2x"]: search.summary_2x ?? "2x Summary not available",
         ["3x"]: search.summary_3x ?? "3x Summary not available",
       },
-      searchResults: search.searchResults.map((result) => ({
+      searchResults: search.searchResults.reverse().map((result) => ({
         content: result.content,
         highlights: result.highlights,
         title: result.source.title,
@@ -357,7 +357,7 @@ export const getSearchDetails = async (req, res) => {
     console.log("GET_SEARCH_DETAILS ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
@@ -417,7 +417,7 @@ export const deleteUserSearch = async (req, res) => {
     console.log("DELETE_SEARCH ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
@@ -473,7 +473,7 @@ export const deleteUserFile = async (req, res) => {
     console.log("DELETE_USER_FILE ERROR 500: ", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server error",
     });
   }
 };
