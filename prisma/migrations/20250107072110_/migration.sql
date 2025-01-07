@@ -7,6 +7,8 @@ CREATE TABLE "Search" (
     "userId" TEXT NOT NULL,
     "query" TEXT NOT NULL,
     "summary" TEXT NOT NULL,
+    "summary_2x" TEXT,
+    "summary_3x" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Search_pkey" PRIMARY KEY ("id")
