@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Search" ALTER COLUMN "summary_2x" DROP NOT NULL,
+ALTER COLUMN "summary_3x" DROP NOT NULL;

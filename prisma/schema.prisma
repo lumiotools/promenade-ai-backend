@@ -21,8 +21,8 @@ model Search {
   userId         String
   query          String
   summary        String
-  summary_2x     String
-  summary_3x     String
+  summary_2x     String?
+  summary_3x     String?
   validSources   Source[]       @relation("ValidSources")
   invalidSources Source[]       @relation("InvalidSources")
   searchResults  SearchResult[] @relation("SearchToSearchResult")
