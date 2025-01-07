@@ -120,14 +120,22 @@ export const handleSearch = async (req, res) => {
       });
     }
 
-    const { response, summary, valid_sources, invalid_sources } =
-      searchResponse.data;
+    const {
+      response,
+      summary,
+      summary_2x,
+      summary_3x,
+      valid_sources,
+      invalid_sources,
+    } = searchResponse.data;
 
     const search = await prisma.search.create({
       data: {
         userId: user_id,
         query: query,
         summary: summary,
+        summary_2x: summary_2x,
+        summary_3x: summary_3x,
         validSources: {
           connectOrCreate: valid_sources.map((source) => ({
             where: { url: source.url }, // Use unique URL for `connectOrCreate`
@@ -300,9 +308,13 @@ export const getSearchDetails = async (req, res) => {
     }
 
     const searchDetails = {
-      date: search.createdAt,
+      createdAt: search.createdAt,
       query: search.query,
-      summary: search.summary,
+      summaries: {
+        ["1x"]: search.summary,
+        ["2x"]: search.summary_2x ?? "2x Summary not available",
+        ["3x"]: search.summary_3x ?? "3x Summary not available",
+      },
       searchResults: search.searchResults.map((result) => ({
         content: result.content,
         highlights: result.highlights,

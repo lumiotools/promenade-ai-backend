@@ -21,6 +21,8 @@ model Search {
   userId         String
   query          String
   summary        String
+  summary_2x     String
+  summary_3x     String
   validSources   Source[]       @relation("ValidSources")
   invalidSources Source[]       @relation("InvalidSources")
   searchResults  SearchResult[] @relation("SearchToSearchResult")
@@ -55,7 +57,7 @@ model UploadedFile {
   name     String
   mimeType String
   size     Int
-  path String
+  path     String
   searches Search[] @relation("SearchFiles")
 
   createdAt DateTime @default(now())
