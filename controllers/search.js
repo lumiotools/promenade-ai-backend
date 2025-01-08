@@ -315,7 +315,7 @@ export const getSearchDetails = async (req, res) => {
         ["2x"]: search.summary_2x ?? "2x Summary not available",
         ["3x"]: search.summary_3x ?? "3x Summary not available",
       },
-      searchResults: search.searchResults.reverse().map((result) => ({
+      searchResults: search.searchResults.map((result) => ({
         content: result.content,
         highlights: result.highlights,
         title: result.source.title,
