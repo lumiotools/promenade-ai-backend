@@ -308,6 +308,8 @@ export const getSearchDetails = async (req, res) => {
       });
     }
 
+    search.searchResults.sort((a, b) => a.order - b.order);
+
     const searchDetails = {
       createdAt: search.createdAt,
       query: search.query,
