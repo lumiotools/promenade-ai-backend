@@ -330,14 +330,19 @@ export const getSearchDetails = async (req, res) => {
               (highlight) =>
                 "text=" +
                 encodeURI(
-                  result.content
+                  (result.content
                     .split(highlight)[0]
                     .split(" ")
                     .slice(-3)
                     .join(" ")
-                    .trim() +
-                    "-," +
-                    highlight
+                    .trim()
+                    ? result.content
+                        .split(highlight)[0]
+                        .split(" ")
+                        .slice(-3)
+                        .join(" ")
+                        .trim() + "-,"
+                    : "") + highlight
                 )
             )
             .join("&"),
