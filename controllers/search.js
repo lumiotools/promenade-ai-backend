@@ -157,7 +157,8 @@ export const handleSearch = async (req, res) => {
           })),
         },
         searchResults: {
-          create: response.map((node) => ({
+          create: response.map((node, i) => ({
+            order: i,
             content: node.content,
             highlights: node.highlight_words,
             source: {

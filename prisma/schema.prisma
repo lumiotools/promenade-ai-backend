@@ -43,6 +43,7 @@ model Source {
 
 model SearchResult {
   id         String   @id @default(cuid())
+  order      Int?
   content    String
   sourceId   String
   source     Source   @relation(fields: [sourceId], references: [id], name: "SourceSearchResults")
