@@ -322,7 +322,22 @@ export const getSearchDetails = async (req, res) => {
         source:
           result.source.url +
           "#:~:text=" +
-          encodeURI(result.highlights.join("&text=")),
+          result.highlights
+            .map(
+              (highlight) =>
+                "text=" +
+                encodeURI(
+                  result.content
+                    .split(highlight)[0]
+                    .split(" ")
+                    .slice(-3)
+                    .join(" ")
+                    .trim() +
+                    "-," +
+                    highlight
+                )
+            )
+            .join("&"),
         type: result.source.type.replaceAll("_", " "),
       })),
       validSources: search.validSources.map((source) => ({
